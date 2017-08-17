@@ -1,28 +1,40 @@
 const express = require('express');
 const models = require('./models');
 const expressGraphQL = require('express-graphql');
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
+const Knex = require('knex');
 const session = require('express-session');
 const passport = require('passport');
 const passportConfig = require('./services/auth');
-const MongoStore = require('connect-mongo')(session);
+// const MongoStore = require('connect-mongo')(session);
+const KnexSessionStore = require('connect-session-knex')(session);
 const schema = require('./schema/schema');
 
 // Create a new Express application
 const app = express();
 
-// Replace with your mongoLab URI
-const MONGO_URI = 'mongodb://vikram:vikram@ds137191.mlab.com:37191/vvptestdb?authMode=scram-sha1';
+// // Replace with your mongoLab URI
+// const MONGO_URI = 'mongodb://vikram:vikram@ds137191.mlab.com:37191/vvptestdb?authMode=scram-sha1';
 
-// Mongoose's built in promise library is deprecated, replace it with ES2015 Promise
-mongoose.Promise = global.Promise;
+// // Mongoose's built in promise library is deprecated, replace it with ES2015 Promise
+// mongoose.Promise = global.Promise;
 
-// Connect to the mongoDB instance and log a message
-// on success or failure
-mongoose.connect(MONGO_URI, {useMongoClient: true});
-mongoose.connection
-    .once('open', () => console.log('Connected to MongoLab instance.'))
-    .on('error', error => console.log('Error connecting to MongoLab:', error));
+// // Connect to the mongoDB instance and log a message
+// // on success or failure
+// mongoose.connect(MONGO_URI, {useMongoClient: true});
+// mongoose.connection
+//     .once('open', () => console.log('Connected to MongoLab instance.'))
+//     .on('error', error => console.log('Error connecting to MongoLab:', error));
+
+const knex = Knex({
+  client: 'pg',
+  connection: {
+      host: 'localhost',
+      user: 'postgres',
+      password: 'vvpp0$t',
+      database: 'QBPMS'
+  }
+});
 
 // Configures express to use sessions.  This places an encrypted identifier
 // on the users cookie.  When a user makes a request, this middleware examines
@@ -33,9 +45,9 @@ app.use(session({
   resave: true,
   saveUninitialized: true,
   secret: 'aaabbbccc',
-  store: new MongoStore({
-    url: MONGO_URI,
-    autoReconnect: true
+  store: new KnexSessionStore({
+    knex: knex,
+    tablename: 'sessions' // optional. Defaults to 'sessions'
   })
 }));
 

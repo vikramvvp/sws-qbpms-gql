@@ -12,11 +12,11 @@ const mutation = new GraphQLObjectType({
     signup: {
       type: UserType,
       args: {
-        email: { type: GraphQLString },
+        username: { type: GraphQLString },
         password: { type: GraphQLString }
       },
-      resolve(parentValue, { email, password }, req) {
-        return AuthService.signup({ email, password, req });
+      resolve(parentValue, { username, password }, req) {
+        return AuthService.signup({ username, password, req });
       }
     },
     logout: {
@@ -30,11 +30,11 @@ const mutation = new GraphQLObjectType({
     login: {
       type: UserType,
       args: {
-        email: { type: GraphQLString },
+        username: { type: GraphQLString },
         password: { type: GraphQLString }
       },
-      resolve(parentValue, { email, password }, req) {
-        return AuthService.login({ email, password, req });
+      resolve(parentValue, { username, password }, req) {
+        return AuthService.login({ username, password, req });
       }
     }
   }
